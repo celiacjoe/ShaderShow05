@@ -266,7 +266,7 @@ const displayShaderSource = `
     uniform vec2 resolution;
     void main () {
       vec2 uv = vUv;
-      float r1 = step(0.5,fract(time*0.2));
+      float r1 = step(0.6,fract(time*0.2));
       float r2 = step(0.5,fract(time*0.1));
         float c = texture2D(uTexture,uv).r;
         vec3 c1 = clamp((3.*abs(1.-2.*fract(c+time*10.+vec3(0.,-1./3.,1./3.)))-1.),0.,1.)*c;
@@ -289,7 +289,7 @@ float h = clamp(dot(ua,ba)/dot(ba,ba),0.,1.);
 return length(ua-ba*h);}
     void main () {
         vec2 uv = vUv;
-        float r1 =step(0.5,fract(time*0.2));
+        float r1 =step(0.6,fract(time*0.2));
         vec2 m = vec2(clamp(mouse.x,0.1,0.9),clamp(mouse.y,0.05,0.95));
         vec2 m2 = vec2( texture2D(uTarget,vec2(0.25,1.)).a, texture2D(uTarget,vec2(0.75,1.)).a);
          float d1 = max(smoothstep(0.01,0.005,li(uv,m2-vec2(0.006,0.0),m)),smoothstep(0.01,0.005,li(uv,m2,m)));
