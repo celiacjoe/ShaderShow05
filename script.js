@@ -262,12 +262,13 @@ const displayShaderSource = `
     precision highp sampler2D;
     varying vec2 vUv;
     uniform sampler2D uTexture;
-    //uniform float time;
+    uniform float time;
     uniform vec2 resolution;
     void main () {
       vec2 uv = vUv;
         float c = texture2D(uTexture,uv).r;
-        gl_FragColor = vec4(vec3(c),1.);
+        vec3 c1 = mix(vec3(1.),clamp((3.*abs(1.-2.*fract(c+time*10.+vec3(0.,-1./3.,1./3.)))-1.),0.,1.),1.)*c;
+        gl_FragColor = vec4(c1,1.);
     }
 `;
 
@@ -483,7 +484,7 @@ function drawDisplay (target) {
     let height = target == null ? gl.drawingBufferHeight : target.height;
 
     displayMaterial.bind();
-  //  gl.uniform1f(displayMaterial.uniforms.time, performance.now() / 1000);
+  gl.uniform1f(displayMaterial.uniforms.time, performance.now() / 1000);
   gl.uniform2f(displayMaterial.uniforms.resolution, canvas.width , canvas.height);
 
     blit(target);
