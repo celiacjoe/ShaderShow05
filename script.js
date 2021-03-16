@@ -290,10 +290,10 @@ return length(ua-ba*h);}
     void main () {
         vec2 uv = vUv;
         float r1 =step(0.6,fract(time*0.2));
-        vec2 m = vec2(clamp(mouse.x,0.1,0.9),clamp(mouse.y,0.05,0.95));
+        vec2 m = vec2(clamp(mouse.x,0.1,0.9),clamp(mouse.y,0.075,0.925));
         vec2 m2 = vec2( texture2D(uTarget,vec2(0.25,1.)).a, texture2D(uTarget,vec2(0.75,1.)).a);
          float d1 = max(smoothstep(0.01,0.005,li(uv,m2-vec2(0.006,0.0),m)),smoothstep(0.01,0.005,li(uv,m2,m)));
-         float ch = step(uv.y,0.95)*step(0.05,uv.y)*step(uv.x,0.9)*step(0.1,uv.x);
+         float ch = step(uv.y,0.95)*step(0.05,uv.y)*step(uv.x,0.925)*step(0.075,uv.x);
          float b =  texture2D(uTarget,uv).x;
          float t2 = max(d1,b*0.985);
          float td = texture2D(uTarget,uv+vec2(0.006,0.0)).x;
