@@ -264,11 +264,10 @@ const displayShaderSource = `
     uniform sampler2D uTexture;
     uniform float time;
     uniform vec2 resolution;
-      float rd (float t){ return fract(sin(dot(floor(t),45.598))*7845.263);}
     void main () {
       vec2 uv = vUv;
-      float r1 = step(0.5,rd(time*0.2));
-      float r2 = step(0.5,rd(time*0.2+45.));
+      float r1 = step(0.5,fract(time*0.2));
+      float r2 = clamp(fract(time*0.15)*2.,0.,1.);
         float c = texture2D(uTexture,uv).r;
         vec3 c1 = mix(vec3(1.),clamp((3.*abs(1.-2.*fract(c+time*10.+vec3(0.,-1./3.,1./3.)))-1.),0.,1.),r2)*c;
         gl_FragColor = vec4(mix(c1,smoothstep(0.4,0.6,c1),r1),1.);
@@ -285,13 +284,12 @@ const splatShader = compileShader(gl.FRAGMENT_SHADER, `
     uniform sampler2D uTarget;
     uniform vec2 resolution;
     uniform vec2 mouse;
-    float rd (float t){ return fract(sin(dot(floor(t),45.598))*7845.263);}
     float li (vec2 uv,vec2 a , vec2 b){ vec2 ua = uv-a; vec2 ba = b-a;
 float h = clamp(dot(ua,ba)/dot(ba,ba),0.,1.);
 return length(ua-ba*h);}
     void main () {
         vec2 uv = vUv;
-        float r1 = step(0.5,rd(time*0.2));
+        float r1 =step(0.5,fract(time*0.2));
         vec2 m = vec2(clamp(mouse.x,0.1,0.9),clamp(mouse.y,0.05,0.95));
         vec2 m2 = vec2( texture2D(uTarget,vec2(0.25,1.)).a, texture2D(uTarget,vec2(0.75,1.)).a);
          float d1 = max(smoothstep(0.01,0.005,li(uv,m2-vec2(0.006,0.0),m)),smoothstep(0.01,0.005,li(uv,m2,m)));
