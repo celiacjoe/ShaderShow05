@@ -301,7 +301,7 @@ return length(ua-ba*h);}
     float d6 = mix(d5,1.-d5,d3.y);
     float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.2,0.2),m));
     float d7 = mix(d6,1.-d6,dp);
-    vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.02).xy;
+    vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.04).xy;
     float tb3 = sin(tb2.x*(fract(time)*5.+7.));
     float d8 = max(mix(d7,0.,tb3),mix(1.-d7,0.,tb3)*0.4);
     float d9 = max(1.-d7,tb2.y*0.9);
