@@ -266,11 +266,10 @@ const displayShaderSource = `
     uniform vec2 resolution;
     void main () {
       vec2 uv = vUv;
-      float r1 = step(0.6,fract(time*0.2));
-      float r2 = step(0.5,fract(time*0.1));
-        float c = texture2D(uTexture,uv).r;
-        vec3 c1 = clamp((3.*abs(1.-2.*fract(c+time*10.+vec3(0.,-1./3.,1./3.)))-1.),0.,1.)*c;
-        gl_FragColor = vec4(mix(mix(c1,1.-c1,r2),smoothstep(0.4,0.6,c1),r1),1.);
+        vec4 t = texture2D(uTexture,uv);
+        vec3 h = (3.*abs(1.-2.*fract(t.y*-0.5+vec3(0.,-1./3.,1./3.)))-1.)*t.y;
+        vec3 r1 = max(h,t.x*t.y*0.3)*t.x*2.;
+        gl_FragColor = vec4(r1,1.);
     }
 `;
 
@@ -289,17 +288,25 @@ float h = clamp(dot(ua,ba)/dot(ba,ba),0.,1.);
 return length(ua-ba*h);}
     void main () {
         vec2 uv = vUv;
-        float r1 =step(0.6,fract(time*0.2));
-        vec2 m = vec2(clamp(mouse.x,0.1,0.9),clamp(mouse.y,0.075,0.925));
-        vec2 m2 = vec2( texture2D(uTarget,vec2(0.25,1.)).a, texture2D(uTarget,vec2(0.75,1.)).a);
-         float d1 = max(smoothstep(0.01,0.005,li(uv,m2-vec2(0.006,0.0),m)),smoothstep(0.01,0.005,li(uv,m2,m)));
-         float ch = step(uv.y,0.95)*step(0.05,uv.y)*step(uv.x,0.925)*step(0.075,uv.x);
-         float b =  texture2D(uTarget,uv).x;
-         float t2 = max(d1,b*0.985);
-         float td = texture2D(uTarget,uv+vec2(0.006,0.0)).x;
-         float t4 = max(t2,mix(td,1.-td,r1));
-         float vt = mix(m.x,m.y,step(0.5,uv.x));
-        gl_FragColor = vec4(vec3(t4)*ch,vt);
+        vec2 m = mouse;
+    vec2 m2 = vec2(texture2D(uTarget,vec2(0.25,0.5)).a,texture2D(uTarget,vec2(0.75,0.5)).a);
+    vec2 p1 = clamp(mix(m2+(m-0.5)*0.1,vec2(0.5),0.05),0.,1.);
+    float fm = mix(p1.x,p1.y,step(0.5,uv.x));
+    vec2 d2 = step(m,uv);
+    vec2 vd3 = p1;
+    vec2 fd3 = step(vd3,uv);
+    vec2 d3 = mix(fd3,1.-fd3,step(vd3,m));
+    float d4 = mix(d2.x,1.-d2.x,d3.x);
+    float d5 = mix(d4,1.-d4,d2.y);
+    float d6 = mix(d5,1.-d5,d3.y);
+    float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.08,0.08),m));
+    float d7 = mix(d6,1.-d6,dp);
+    vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.01).xy;
+    float tb3 = sin(tb2.x*(fract(time)*5.+7.));
+    float d8 = max(mix(d7,0.,tb3),mix(1.-d7,0.,tb3)*0.4);
+    float d9 = max(1.-d7,tb2.y*0.9);
+        gl_FragColor = vec4(smoothstep(0.,1.,d8),d9,0.,fm);
+
     }
 `);
 
