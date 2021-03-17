@@ -299,7 +299,7 @@ return length(ua-ba*h);}
     float d4 = mix(d2.x,1.-d2.x,d3.x);
     float d5 = mix(d4,1.-d4,d2.y);
     float d6 = mix(d5,1.-d5,d3.y);
-    float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.08,0.08),m));
+    float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.2,0.2),m));
     float d7 = mix(d6,1.-d6,dp);
     vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.01).xy;
     float tb3 = sin(tb2.x*(fract(time)*5.+7.));
@@ -377,8 +377,8 @@ function createFBO (w, h, internalFormat, format, type, param) {
     gl.bindTexture(gl.TEXTURE_2D, texture);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, param);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, param);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, w, h, 0, format, type, null);
 
     let fbo = gl.createFramebuffer();
