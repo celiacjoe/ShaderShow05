@@ -562,7 +562,7 @@ canvas.addEventListener('touchstart', e => {
 });
 
 canvas.addEventListener('touchmove', e => {
-  navigator.vibrate(100);
+  navigator.vibrate(10);
     e.preventDefault();
     const touches = e.targetTouches;
     for (let i = 0; i < touches.length; i++) {
