@@ -267,9 +267,9 @@ const displayShaderSource = `
     void main () {
       vec2 uv = vUv;
         vec4 t = texture2D(uTexture,uv);
-        vec3 h = (3.*abs(1.-2.*fract(t.y*-0.5+vec3(0.,-1./3.,1./3.)))-1.)*t.y;
-        vec3 r1 = max(h,t.x*t.y*0.3)*t.x*2.;
-        gl_FragColor = vec4(r1,1.);
+      //  vec3 h = (3.*abs(1.-2.*fract(t.y*-0.5+vec3(0.,-1./3.,1./3.)))-1.)*t.y;
+      //  vec3 r1 = max(h,t.x*t.y*0.3)*t.x*2.;
+        gl_FragColor = vec4(t.x,t.x,t.x,1.);
     }
 `;
 
@@ -304,8 +304,8 @@ return length(ua-ba*h);}
     vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.03).xy;
     float tb3 = sin(tb2.x*(fract(time)*5.+7.));
     float d8 = max(mix(d6,0.,tb3),mix(1.-d6,0.,tb3)*0.2);
-    float d9 = max(1.-d6,tb2.y*0.9);
-        gl_FragColor = vec4(smoothstep(0.,1.,d8),d9,0.,fm);
+  //float d9 = max(1.-d6,tb2.y*0.9);
+        gl_FragColor = vec4(smoothstep(0.,1.,d8),0.,0.,fm);
 
     }
 `);
@@ -671,14 +671,9 @@ var context = new audiocontext();
 var osc = context.createOscillator();
 var vol = context.createGain();
 setInterval(sons, 1)
-function fract(tt) { return tt - Math.floor(tt); }
-function rd(tt) { return fract(Math.sin(tt) * 7854.26); }
 function sons() {
     var time = new Date().getMilliseconds() / 1000.;
-    var t2 = time * 3.;
-    var f1 = fract(t2)
-    var r1 = rd(time * 24.);
-    osc.frequency.value = Math.pow(f1, 0.8) * 300.;
+    osc.frequency.value = 100.+(pointers[0].texcoordX)*100.+(pointers[0].texcoordY)*100.;
     vol.gain.value =1.;
 }
 
