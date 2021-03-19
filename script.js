@@ -299,12 +299,12 @@ return length(ua-ba*h);}
     float d4 = mix(d2.x,1.-d2.x,d3.x);
     float d5 = mix(d4,1.-d4,d2.y);
     float d6 = mix(d5,1.-d5,d3.y);
-    float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.2,0.2),m));
-    float d7 = mix(d6,1.-d6,dp);
+    //float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.2,0.2),m));
+    //float d7 = mix(d6,1.-d6,dp);
     vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.03).xy;
     float tb3 = sin(tb2.x*(fract(time)*5.+7.));
-    float d8 = max(mix(d7,0.,tb3),mix(1.-d7,0.,tb3)*0.4);
-    float d9 = max(1.-d7,tb2.y*0.9);
+    float d8 = max(mix(d6,0.,tb3),mix(1.-d6,0.,tb3)*0.2);
+    float d9 = max(1.-d6,tb2.y*0.9);
         gl_FragColor = vec4(smoothstep(0.,1.,d8),d9,0.,fm);
 
     }
