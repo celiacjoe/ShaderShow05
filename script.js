@@ -670,13 +670,16 @@ window.audiocontext = window.AudioContext || webkitAudioContext;
 var context = new audiocontext();
 var osc = context.createOscillator();
 var vol = context.createGain();
+//ocs.type = 'square';
 setInterval(sons, 1)
+function fract(tt) { return tt - Math.floor(tt); }
 function sons() {
     var time = new Date().getMilliseconds() / 1000.;
-    osc.frequency.value = 100.+(pointers[0].texcoordX)*100.+(pointers[0].texcoordY)*100.;
-    vol.gain.value =1.;
+    //ocs.type = 'sine';
+    //osc.frequency.value = (1.-Math.pow(fract(time*3.),0.7))*100.*pointers[0].texcoordY;
+    osc.frequency.value = (pointers[0].texcoordX)*100.+(pointers[0].texcoordY)*100.;
+    vol.gain.value =(1.-Math.pow(fract(time),0.5))*3.+0.2;
 }
-
 
 osc.connect(vol);
 vol.connect(context.destination);
