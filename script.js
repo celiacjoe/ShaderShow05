@@ -666,3 +666,23 @@ function hashCode (s) {
     }
     return hash;
 };
+window.audiocontext = window.AudioContext || webkitAudioContext;
+var context = new audiocontext();
+var osc = context.createOscillator();
+var vol = context.createGain();
+setInterval(sons, 1)
+function fract(tt) { return tt - Math.floor(tt); }
+function rd(tt) { return fract(Math.sin(tt) * 7854.26); }
+function sons() {
+    var time = new Date().getMilliseconds() / 1000.;
+    var t2 = time * 3.;
+    var f1 = fract(t2)
+    var r1 = rd(time * 24.);
+    osc.frequency.value = Math.pow(f1, 0.8) * 300.;
+    vol.gain.value =1.;
+}
+
+
+osc.connect(vol);
+vol.connect(context.destination);
+    osc.start();
