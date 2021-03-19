@@ -302,7 +302,8 @@ return length(ua-ba*h);}
     //float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.2,0.2),m));
     //float d7 = mix(d6,1.-d6,dp);
     vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.03).xy;
-    float tb3 = sin(tb2.x*(fract(time*2.)*5.+7.));
+    float ft = fract(time*3.*mix(1.,2.,step(0.25,fract(time*1.5))));
+    float tb3 = sin(tb2.x*(ft*5.+7.));
     float d8 = max(mix(d6,0.,tb3),mix(1.-d6,0.,tb3)*0.2);
   //float d9 = max(1.-d6,tb2.y*0.9);
         gl_FragColor = vec4(smoothstep(0.,1.,d8),0.,0.,fm);
@@ -666,6 +667,11 @@ function hashCode (s) {
     }
     return hash;
 };
+Math.lerp = function (value1, value2, amount) {
+	amount = amount < 0 ? 0 : amount;
+	amount = amount > 1 ? 1 : amount;
+	return value1 + (value2 - value1) * amount;
+};
 window.audiocontext = window.AudioContext || webkitAudioContext;
 var context = new audiocontext();
 var osc = context.createOscillator();
@@ -676,9 +682,15 @@ function fract(tt) { return tt - Math.floor(tt); }
 function sons() {
     var time = new Date().getMilliseconds() / 1000.;
     //ocs.type = 'sine';
-    //osc.frequency.value = (1.-Math.pow(fract(time*3.),0.7))*100.*pointers[0].texcoordY;
-    var f1 = (1.-Math.pow(fract(time*2.),(pointers[0].texcoordX)));
-    osc.frequency.value = ((pointers[0].texcoordY)*50.);
+
+    var vf1 = fract(time*1.5);
+    var v0 = 1.;
+    if(vf1>0.25) {
+      v0 =2.;
+    }
+    var a1 = fract(time*3.*v0);
+    var f1 = (1.-Math.pow(fract(a1),pointers[0].texcoordX));
+    osc.frequency.value = ((pointers[0].texcoordY)*40.)+10.;
     vol.gain.value =f1*50.;
 }
 
