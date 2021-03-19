@@ -689,8 +689,8 @@ function sons() {
       v0 =2.;
     }
     var a1 = fract(time*3.*v0);
-    var f1 = (1.-Math.pow(fract(a1),pointers[0].texcoordX));
-    osc.frequency.value = ((pointers[0].texcoordY)*40.)+10.;
+    var f1 = (1.-Math.pow(fract(a1),pointers[0].texcoordX*0.5));
+    osc.frequency.value = ((pointers[0].texcoordY)*20.)+10.;
     vol.gain.value =f1*50.;
 }
 
