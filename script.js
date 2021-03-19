@@ -543,7 +543,7 @@ canvas.addEventListener('mousemove', e => {
 });
 
 window.addEventListener('mouseup', () => {
-//  navigator.vibrate(200);
+ navigator.vibrate(200);
     updatePointerUpData(pointers[0]);
 });
 
@@ -679,7 +679,7 @@ function sons() {
     //osc.frequency.value = (1.-Math.pow(fract(time*3.),0.7))*100.*pointers[0].texcoordY;
     var f1 = (1.-Math.pow(fract(time*2.),(pointers[0].texcoordX)));
     osc.frequency.value = ((pointers[0].texcoordY)*50.);
-    vol.gain.value =f1*50.+1.;
+    vol.gain.value =f1*50.;
 }
 
 osc.connect(vol);
