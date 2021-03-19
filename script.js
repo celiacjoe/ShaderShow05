@@ -524,7 +524,7 @@ function splat (x, y) {
 }
 
 canvas.addEventListener('mousedown', e => {
-  navigator.vibrate(200);
+  //navigator.vibrate(200);
     let posX = scaleByPixelRatio(e.offsetX);
     let posY = scaleByPixelRatio(e.offsetY);
     //let pointer = pointers.find(p => p.id == -1);
@@ -543,12 +543,12 @@ canvas.addEventListener('mousemove', e => {
 });
 
 window.addEventListener('mouseup', () => {
-  navigator.vibrate(200);
+//  navigator.vibrate(200);
     updatePointerUpData(pointers[0]);
 });
 
 canvas.addEventListener('touchstart', e => {
-  navigator.vibrate(200);
+  navigator.vibrate(100);
     e.preventDefault();
     const touches = e.targetTouches;
     while (touches.length >= pointers.length)
@@ -562,6 +562,7 @@ canvas.addEventListener('touchstart', e => {
 });
 
 canvas.addEventListener('touchmove', e => {
+  navigator.vibrate(100);
     e.preventDefault();
     const touches = e.targetTouches;
     for (let i = 0; i < touches.length; i++) {
@@ -575,7 +576,7 @@ canvas.addEventListener('touchmove', e => {
 }, false);
 
 window.addEventListener('touchend', e => {
-  navigator.vibrate(200);
+  navigator.vibrate(100);
     const touches = e.changedTouches;
     for (let i = 0; i < touches.length; i++)
     {
