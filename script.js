@@ -530,7 +530,7 @@ canvas.addEventListener('mousedown', e => {
     let pointer = pointers[0];
     if (pointer == null)
         pointer = new pointerPrototype();
-      window.navigator.vibrate(200);
+      navigator.vibrate(200);
     updatePointerDownData(pointer, -1, posX, posY);
 });
 
