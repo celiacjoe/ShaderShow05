@@ -702,9 +702,9 @@ function sons() {
     //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
     //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
 
-    osc.frequency.value =Math.min(Math.hypot(px-pvx,py-py)*10000.,20.+20.*py)*f1;
+    osc.frequency.value =Math.min(Math.hypot(px-pvx,py-pvy)*10000.,100.*py+100.)*f1;
     //osc.frequency.value = (100.)*f1;
-    vol.gain.value =50.;
+    vol.gain.value =1.;
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
 
