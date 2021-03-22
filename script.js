@@ -283,6 +283,7 @@ const splatShader = compileShader(gl.FRAGMENT_SHADER, `
     uniform sampler2D uTarget;
     uniform vec2 resolution;
     uniform vec2 mouse;
+    uniform vec2 prevmouse;
     float li (vec2 uv,vec2 a , vec2 b){ vec2 ua = uv-a; vec2 ba = b-a;
 float h = clamp(dot(ua,ba)/dot(ba,ba),0.,1.);
 return length(ua-ba*h);}
@@ -302,8 +303,8 @@ return length(ua-ba*h);}
     //float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.2,0.2),m));
     //float d7 = mix(d6,1.-d6,dp);
     vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.03).xy;
-    float ft = fract(time*3.*mix(1.,2.,step(0.25,fract(time*1.5))));
-    float tb3 = sin(tb2.x*(ft*5.+7.));
+    float ft = fract(time*3.*mix(1.,2.,step(0.25,fract(time*1.5))))*pow(abs(m.y-prevmouse.y),0.1);
+    float tb3 = sin(tb2.x*(ft*20.));
     float d8 = max(mix(d6,0.,tb3),mix(1.-d6,0.,tb3)*0.2);
   //float d9 = max(1.-d6,tb2.y*0.9);
         gl_FragColor = vec4(smoothstep(0.,1.,d8),0.,0.,fm);
@@ -452,9 +453,10 @@ function update () {
     if (resizeCanvas())
         initFramebuffers();
 //    updateColors(dt);
-    applyInputs();
+    //applyInputs();
   /*  if (!config.PAUSED)
         step(dt);*/
+        splat();
     render(null);
     requestAnimationFrame(update);
 }
@@ -478,11 +480,12 @@ function resizeCanvas () {
     return false;
 }
 
-function applyInputs () {
+/*function applyInputs () {
 
   //  pointers.forEach(p => {splatPointer();});
-  splatPointer( pointers[0]);
-}
+  //splatPointer( pointers[0]);
+  splat();
+}*/
 
 function render (target) {
 
@@ -508,17 +511,18 @@ function drawDisplay (target) {
     blit(destination);
 }*/
 
-function splatPointer (pointer) {
+/*function splatPointer (pointer) {
 
-    splat(pointer.texcoordX, pointer.texcoordY);
-}
+    splat(pointers[0].texcoordX, pointers[0].texcoordY);
+}*/
 
-function splat (x, y) {
+function splat () {
   let dyeRes = getResolution(config.DYE_RESOLUTION);
     splatProgram.bind();
     gl.uniform1f(splatProgram.uniforms.time, performance.now() / 1000);
     gl.uniform2f(splatProgram.uniforms.resolution, dyeRes.width , dyeRes.height);
-    gl.uniform2f(splatProgram.uniforms.mouse, x, y);
+    gl.uniform2f(splatProgram.uniforms.mouse, pointers[0].texcoordX, pointers[0].texcoordY);
+    gl.uniform2f(splatProgram.uniforms.prevmouse, pointers[0].prevTexcoordX, pointers[0].prevTexcoordY);
     gl.uniform1i(splatProgram.uniforms.uTarget, dye.read.attach(0));
     blit(dye.write);
     dye.swap();
@@ -672,28 +676,34 @@ Math.lerp = function (value1, value2, amount) {
 	amount = amount > 1 ? 1 : amount;
 	return value1 + (value2 - value1) * amount;
 };
+function fract(tt) { return tt - Math.floor(tt); }
 window.audiocontext = window.AudioContext || webkitAudioContext;
 var context = new audiocontext();
 var osc = context.createOscillator();
 var vol = context.createGain();
-//ocs.type = 'square';
-setInterval(sons, 1)
-function fract(tt) { return tt - Math.floor(tt); }
-function sons() {
-    var time = new Date().getMilliseconds() / 1000.;
-    //ocs.type = 'sine';
 
+setInterval(sons, 1)
+
+function sons() {
+    var pvy = pointers[0].prevTexcoordY;
+    var time = context.currentTime;
     var vf1 = fract(time*1.5);
     var v0 = 1.;
     if(vf1>0.25) {
       v0 =2.;
     }
     var a1 = fract(time*3.*v0);
-    var f1 = (1.-Math.pow(fract(a1),pointers[0].texcoordX*0.5));
-    osc.frequency.value = ((pointers[0].texcoordY)*20.)+10.;
-    vol.gain.value =f1*50.;
+    var f1 = (1.-Math.pow(fract(a1),pointers[0].texcoordX));
+    //var f1 = (1.-Math.pow(fract(a1),0.5));
+    //osc.frequency.value = ((pointers[0].texcoordY-pvx)*300.);
+
+    osc.frequency.value =Math.pow(Math.abs(pvy-pointers[0].texcoordY),0.1)*50.*f1;
+    //osc.frequency.value =Math.pow(Math.hypot(pointers[0].prevTexcoordX-pointers[0].texcoordX,
+      //pointers[0].prevTexcoordY-pointers[0].texcoordY),0.1)*50.*f1;
+    //osc.frequency.value = (100.)*f1;
+    vol.gain.value = 10.;
+    //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
 
-osc.connect(vol);
-vol.connect(context.destination);
+osc.connect(vol).connect(context.destination);
     osc.start();
