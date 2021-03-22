@@ -303,7 +303,7 @@ return length(ua-ba*h);}
     //float dp = smoothstep(0.003,0.001,li(uv,m+clamp((m2-0.5)*-1.,-0.2,0.2),m));
     //float d7 = mix(d6,1.-d6,dp);
     vec2 tb2 = texture2D(uTarget,uv+(uv-0.5)*0.03).xy;
-    float ft = fract(time*3.*mix(1.,2.,step(0.25,fract(time*1.5))))*pow(abs(m.y-prevmouse.y),0.1);
+    float ft = fract(time*3.*mix(1.,2.,step(0.25,fract(time*1.5))))*min(distance(m,prevmouse)*20.,1.);
     float tb3 = sin(tb2.x*(ft*20.));
     float d8 = max(mix(d6,0.,tb3),mix(1.-d6,0.,tb3)*0.2);
   //float d9 = max(1.-d6,tb2.y*0.9);
@@ -449,7 +449,7 @@ let lastUpdateTime = Date.now();
 update();
 
 function update () {
-    const dt = calcDeltaTime();
+  //  const dt = calcDeltaTime();
     if (resizeCanvas())
         initFramebuffers();
 //    updateColors(dt);
@@ -671,20 +671,21 @@ function hashCode (s) {
     }
     return hash;
 };
-Math.lerp = function (value1, value2, amount) {
-	amount = amount < 0 ? 0 : amount;
-	amount = amount > 1 ? 1 : amount;
-	return value1 + (value2 - value1) * amount;
-};
+function lerp (start, end, amt){
+  return (1-amt)*start+amt*end
+}
 function fract(tt) { return tt - Math.floor(tt); }
 window.audiocontext = window.AudioContext || webkitAudioContext;
 var context = new audiocontext();
 var osc = context.createOscillator();
 var vol = context.createGain();
-
+var dt = calcDeltaTime();
 setInterval(sons, 1)
 
 function sons() {
+    var px = pointers[0].texcoordX;
+    var pvx = pointers[0].prevTexcoordX;
+    var py = pointers[0].texcoordY;
     var pvy = pointers[0].prevTexcoordY;
     var time = context.currentTime;
     var vf1 = fract(time*1.5);
@@ -693,15 +694,17 @@ function sons() {
       v0 =2.;
     }
     var a1 = fract(time*3.*v0);
-    var f1 = (1.-Math.pow(fract(a1),pointers[0].texcoordX));
+    var f1 = (1.-Math.pow(fract(a1),px));
     //var f1 = (1.-Math.pow(fract(a1),0.5));
     //osc.frequency.value = ((pointers[0].texcoordY-pvx)*300.);
+    //vec2 p1 = clamp(mix(m2+(m-0.5)*0.1,vec2(0.5),0.05),0.,1.);
+    //osc.frequency.value = Math.min(Math.abs((py-lerp(pvy,py,0.7))*10000.),300.);
+    //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
+    //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
 
-    osc.frequency.value =Math.pow(Math.abs(pvy-pointers[0].texcoordY),0.1)*50.*f1;
-    //osc.frequency.value =Math.pow(Math.hypot(pointers[0].prevTexcoordX-pointers[0].texcoordX,
-      //pointers[0].prevTexcoordY-pointers[0].texcoordY),0.1)*50.*f1;
+    osc.frequency.value =Math.min(Math.hypot(px-pvx,py-py)*10000.,20.+20.*py)*f1;
     //osc.frequency.value = (100.)*f1;
-    vol.gain.value = 10.;
+    vol.gain.value =50.;
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
 
