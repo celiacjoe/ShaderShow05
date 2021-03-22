@@ -558,37 +558,37 @@ canvas.addEventListener('touchstart', e => {
     const touches = e.targetTouches;
     while (touches.length >= pointers.length)
         pointers.push(new pointerPrototype());
-    for (let i = 0; i < touches.length; i++) {
-        let posX = scaleByPixelRatio(touches[i].pageX);
-        let posY = scaleByPixelRatio(touches[i].pageY);
+  //  for (let i = 0; i < touches.length; i++) {
+        let posX = scaleByPixelRatio(touches[0].pageX);
+        let posY = scaleByPixelRatio(touches[0].pageY);
         //updatePointerDownData(pointers[i + 1], touches[i].identifier, posX, posY);
-        updatePointerDownData(pointers[0], touches[i].identifier, posX, posY);
-    }
+        updatePointerDownData(pointers[0], touches[0].identifier, posX, posY);
+  //  }
 });
 
 canvas.addEventListener('touchmove', e => {
   //navigator.vibrate(10);
     e.preventDefault();
     const touches = e.targetTouches;
-    for (let i = 0; i < touches.length; i++) {
+  //  for (let i = 0; i < touches.length; i++) {
         //let pointer = pointers[i + 1];
         let pointer = pointers[0];
-        if (!pointer.down) continue;
-        let posX = scaleByPixelRatio(touches[i].pageX);
-        let posY = scaleByPixelRatio(touches[i].pageY);
+        //if (!pointer.down) continue;
+        let posX = scaleByPixelRatio(touches[0].pageX);
+        let posY = scaleByPixelRatio(touches[0].pageY);
         updatePointerMoveData(pointer, posX, posY);
-    }
+  //  }
 }, false);
 
 window.addEventListener('touchend', e => {
   navigator.vibrate(100);
     const touches = e.changedTouches;
-    for (let i = 0; i < touches.length; i++)
-    {
-        let pointer = pointers.find(p => p.id == touches[i].identifier);
-        if (pointer == null) continue;
+  //  for (let i = 0; i < touches.length; i++)
+  //  {
+        let pointer = pointers.find(p => p.id == touches[0].identifier);
+        //if (pointer == null) continue;
         updatePointerUpData(pointer);
-    }
+  //  }
 });
 
 
@@ -675,9 +675,33 @@ function lerp (start, end, amt){
   return (1-amt)*start+amt*end
 }
 function fract(tt) { return tt - Math.floor(tt); }
+function sharkFin(x) {
+  if (x < 0) return 0;
+  x = x * 2 % 2 + 0.05;
+  if (x < 1) {
+    return  1 + Math.log(x) / 4;
+  }
+  return Math.pow(-x, -2);
+}
 window.audiocontext = window.AudioContext || webkitAudioContext;
 var context = new audiocontext();
+var count = 128;
+var sharkFinValues = new Array(count);
+for (var i = 0; i < count; i++) {
+  sharkFinValues[i] = sharkFin(i/count);
+}
+//var real = new Float32Array([0.2,0.6,0.7,0.1,0.5,0.6,0.1,0.9,0.1,0.5,0.6,0.4,0.8,0.9,0.2,0.4,0.6,0.5,0.9,0.7,0.9,0.4,0.2,0.3,0.2]);
+//var imag = new Float32Array([0.8,0.3,0.5,0.9,0.4,0.7,0.1,0.6,0.6,0.4,0.5,0.6,0.4,0.7,0.8,0.6,0.4,0.3,0.2,0.1,0.2,0.3,0.5,0.6,0.7]);
+//var ft = new DFT(sharkFinValues.length);
+//ft.forward(sharkFinValues);
+var real = new Float32Array([0,-0.4,0.4,-1,1,-1,0.3,0.7,0.6,-0.5,-0.9,0.8]);
+
+var imag = new Float32Array([0.5,0.8,0.3,-0.3,0.2,-0.5,-0.6,0.1,-0.3,0.5,0.7,0.9]);
+var wave = context.createPeriodicWave(real, imag);
+
+//
 var osc = context.createOscillator();
+osc.setPeriodicWave(wave);
 var vol = context.createGain();
 var dt = calcDeltaTime();
 setInterval(sons, 1)
@@ -694,17 +718,17 @@ function sons() {
       v0 =2.;
     }
     var a1 = fract(time*3.*v0);
-    var f1 = (1.-Math.pow(fract(a1),px));
+    var f1 = (1.-Math.pow(fract(a1),0.2+px));
     //var f1 = (1.-Math.pow(fract(a1),0.5));
     //osc.frequency.value = ((pointers[0].texcoordY-pvx)*300.);
     //vec2 p1 = clamp(mix(m2+(m-0.5)*0.1,vec2(0.5),0.05),0.,1.);
     //osc.frequency.value = Math.min(Math.abs((py-lerp(pvy,py,0.7))*10000.),300.);
     //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
     //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
-
-    osc.frequency.value =Math.min(Math.hypot(px-pvx,py-pvy)*10000.,100.*py+100.)*f1;
+    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*10000.,10.+py*20.)*f1;
+    osc.frequency.value =fa;
     //osc.frequency.value = (100.)*f1;
-    vol.gain.value =1.;
+    vol.gain.value =1.;//lerp(5.,10.,f1);
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
 
