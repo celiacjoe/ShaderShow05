@@ -685,25 +685,64 @@ function sharkFin(x) {
 }
 window.audiocontext = window.AudioContext || webkitAudioContext;
 var context = new audiocontext();
-var count = 128;
+/*var count = 128;
 var sharkFinValues = new Array(count);
 for (var i = 0; i < count; i++) {
   sharkFinValues[i] = sharkFin(i/count);
-}
+}*/
 //var real = new Float32Array([0.2,0.6,0.7,0.1,0.5,0.6,0.1,0.9,0.1,0.5,0.6,0.4,0.8,0.9,0.2,0.4,0.6,0.5,0.9,0.7,0.9,0.4,0.2,0.3,0.2]);
 //var imag = new Float32Array([0.8,0.3,0.5,0.9,0.4,0.7,0.1,0.6,0.6,0.4,0.5,0.6,0.4,0.7,0.8,0.6,0.4,0.3,0.2,0.1,0.2,0.3,0.5,0.6,0.7]);
 //var ft = new DFT(sharkFinValues.length);
 //ft.forward(sharkFinValues);
-var real = new Float32Array([0,-0.4,0.4,-1,1,-1,0.3,0.7,0.6,-0.5,-0.9,0.8]);
+//var real = new Float32Array([0,-0.4,0.4,-1,1,-1,0.3,0.7,0.6,-0.5,-0.9,0.8]);
 
-var imag = new Float32Array([0.5,0.8,0.3,-0.3,0.2,-0.5,-0.6,0.1,-0.3,0.5,0.7,0.9]);
+//ar imag = new Float32Array([0.5,0.8,0.3,-0.3,0.2,-0.5,-0.6,0.1,-0.3,0.5,0.7,0.9]);
+var count = 64; // The more coefficients you use, the better the approximation
+var real = new Float32Array(count);
+var imag = new Float32Array(count);
+
+//eal[0] = 0.5;
+for (var i = 1; i < count; i++) { // note i starts at 1
+imag[i] =  Math.sin(i * Math.PI)/ Math.pow(Math.PI * i, 2.);
+    //imag[i] =Math.pow(-1, i + 1) * (2 / (i * Math.PI));//sawtooth
+    //imag[i] =(2 / (i * Math.PI)) * (1 - Math.pow(-1, i));//square
+//  imag[i] =  (8 * Math.sin((i * Math.PI) / 2)) / Math.pow(Math.PI * i, 2);//triangle
+}
+
+;
+/*var imag = Array.from({ length: 64 }, (_, n) => (
+  n === 1 ?
+  1 :
+  0
+));
+var real = imag.map(() => 0);*/
 var wave = context.createPeriodicWave(real, imag);
 
 //
 var osc = context.createOscillator();
 osc.setPeriodicWave(wave);
+//osc.type = 'sawtooth';
+osc
 var vol = context.createGain();
-var dt = calcDeltaTime();
+//var dt = calcDeltaTime();
+
+var bufferSize = 4096;
+var brownNoise = (function() {
+    var lastOut = 0.0;
+    var node =context.createScriptProcessor(bufferSize, 1, 1);
+    node.onaudioprocess = function(e) {
+        var output = e.outputBuffer.getChannelData(0);
+        for (var i = 0; i < bufferSize; i++) {
+            var white = Math.random() * 2 - 1;
+            output[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = output[i];
+            output[i] *= 3.5; // (roughly) compensate for gain
+        }
+    }
+    return node;
+})();
+
+
 setInterval(sons, 1)
 
 function sons() {
@@ -718,19 +757,19 @@ function sons() {
       v0 =2.;
     }
     var a1 = fract(time*3.*v0);
-    var f1 = (1.-Math.pow(fract(a1),0.2+px));
+    var f1 = (1.-Math.pow(fract(a1),0.2+.7));
     //var f1 = (1.-Math.pow(fract(a1),0.5));
     //osc.frequency.value = ((pointers[0].texcoordY-pvx)*300.);
     //vec2 p1 = clamp(mix(m2+(m-0.5)*0.1,vec2(0.5),0.05),0.,1.);
     //osc.frequency.value = Math.min(Math.abs((py-lerp(pvy,py,0.7))*10000.),300.);
     //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
     //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
-    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*2000.,50.+py*20.)*f1;
-    osc.frequency.value =fa;
+    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*3000.,10.+py*10.);
+    osc.frequency.value =fa*f1
     //osc.frequency.value = (100.)*f1;
-    vol.gain.value =5.;
+    vol.gain.value =1.5;
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
-
+//brownNoise.connect(vol).connect(context.destination);
 osc.connect(vol).connect(context.destination);
     osc.start();
