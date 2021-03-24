@@ -717,8 +717,8 @@ var osc = context.createOscillator();
 osc
 var vol = context.createGain();
 //var dt = calcDeltaTime();
-
-/*var bufferSize = 4096;
+var biquadFilter = context.createBiquadFilter();
+var bufferSize = 4096;
 var brownNoise = (function() {
     var lastOut = 0.0;
     var node =context.createScriptProcessor(bufferSize, 1, 1);
@@ -728,11 +728,11 @@ var brownNoise = (function() {
             var white = Math.random() * 2 - 1;
             output[i] = (lastOut + (0.02 * white)) / 1.02;
             lastOut = output[i];
-            output[i] *= 3.5; // (roughly) compensate for gain
+            output[i] *=3.5; // (roughly) compensate for gain
         }
     }
     return node;
-})();*/
+})();
 
 setInterval(sons, 1)
 
@@ -749,8 +749,8 @@ function sons() {
         v0 =2.;
       }
       var a1 = fract(time*3.*v0);
-      var f1 = (1.-fract(a1));
-  var count =8 ; // The more coefficients you use, the better the approximation
+      var f1 = (1.-Math.pow(fract(a1),1.-Math.abs(px-0.5)));
+/*  var count =8 ; // The more coefficients you use, the better the approximation
   var real = new Float32Array(count);
   var imag = new Float32Array(count);
 
@@ -761,7 +761,7 @@ function sons() {
   imag[i] =  Math.sin(i*f1+f1) ;
 }
   var wave = context.createPeriodicWave(real, imag);
-  osc.setPeriodicWave(wave);
+  osc.setPeriodicWave(wave);*/
 
     //var f1 = (1.-Math.pow(fract(a1),0.5));
     //osc.frequency.value = ((pointers[0].texcoordY-pvx)*300.);
@@ -769,13 +769,17 @@ function sons() {
     //osc.frequency.value = Math.min(Math.abs((py-lerp(pvy,py,0.7))*10000.),300.);
     //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
     //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
-    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,7.);
-    osc.frequency.value =fa*5.*f1;
+    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,1.);
+  //  osc.frequency.value =fa*5.*f1;
     //osc.frequency.value = (100.)*f1;
-    vol.gain.value =fa*f1;
+    vol.gain.value =fa*f1*10.;
+
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
-//brownNoise.connect(vol).connect(context.destination);
 
-osc.connect(vol).connect(context.destination);
-    osc.start();
+//biquadFilter.type = "lowpass";
+biquadFilter.frequency.value=400.;
+brownNoise.connect(vol).connect(biquadFilter).connect(context.destination);
+
+//osc.connect(vol).connect(context.destination);
+//    osc.start();
