@@ -675,14 +675,14 @@ function lerp (start, end, amt){
   return (1-amt)*start+amt*end
 }
 function fract(tt) { return tt - Math.floor(tt); }
-function sharkFin(x) {
+/*function sharkFin(x) {
   if (x < 0) return 0;
   x = x * 2 % 2 + 0.05;
   if (x < 1) {
     return  1 + Math.log(x) / 4;
   }
   return Math.pow(-x, -2);
-}
+}*/
 window.audiocontext = window.AudioContext || webkitAudioContext;
 var context = new audiocontext();
 /*var count = 128;
@@ -697,36 +697,28 @@ for (var i = 0; i < count; i++) {
 //var real = new Float32Array([0,-0.4,0.4,-1,1,-1,0.3,0.7,0.6,-0.5,-0.9,0.8]);
 
 //ar imag = new Float32Array([0.5,0.8,0.3,-0.3,0.2,-0.5,-0.6,0.1,-0.3,0.5,0.7,0.9]);
-var count = 64; // The more coefficients you use, the better the approximation
-var real = new Float32Array(count);
-var imag = new Float32Array(count);
 
-//eal[0] = 0.5;
-for (var i = 1; i < count; i++) { // note i starts at 1
-imag[i] =  Math.sin(i * Math.PI)/ Math.pow(Math.PI * i, 2.);
     //imag[i] =Math.pow(-1, i + 1) * (2 / (i * Math.PI));//sawtooth
     //imag[i] =(2 / (i * Math.PI)) * (1 - Math.pow(-1, i));//square
 //  imag[i] =  (8 * Math.sin((i * Math.PI) / 2)) / Math.pow(Math.PI * i, 2);//triangle
-}
 
-;
 /*var imag = Array.from({ length: 64 }, (_, n) => (
   n === 1 ?
   1 :
   0
 ));
 var real = imag.map(() => 0);*/
-var wave = context.createPeriodicWave(real, imag);
+
 
 //
 var osc = context.createOscillator();
-osc.setPeriodicWave(wave);
+
 //osc.type = 'sawtooth';
 osc
 var vol = context.createGain();
 //var dt = calcDeltaTime();
 
-var bufferSize = 4096;
+/*var bufferSize = 4096;
 var brownNoise = (function() {
     var lastOut = 0.0;
     var node =context.createScriptProcessor(bufferSize, 1, 1);
@@ -740,34 +732,46 @@ var brownNoise = (function() {
         }
     }
     return node;
-})();
-
+})();*/
 
 setInterval(sons, 1)
 
 function sons() {
-    var px = pointers[0].texcoordX;
-    var pvx = pointers[0].prevTexcoordX;
-    var py = pointers[0].texcoordY;
-    var pvy = pointers[0].prevTexcoordY;
-    var time = context.currentTime;
-    var vf1 = fract(time*1.5);
-    var v0 = 1.;
-    if(vf1>0.25) {
-      v0 =2.;
-    }
-    var a1 = fract(time*3.*v0);
-    var f1 = (1.-Math.pow(fract(a1),0.2+.7));
+  var time = context.currentTime;
+  var px = pointers[0].texcoordX;
+  var pvx = pointers[0].prevTexcoordX;
+  var py = pointers[0].texcoordY;
+  var pvy = pointers[0].prevTexcoordY;
+
+      var vf1 = fract(time*1.5);
+      var v0 = 1.;
+      if(vf1>0.25) {
+        v0 =2.;
+      }
+      var a1 = fract(time*3.*v0);
+      var f1 = (1.-Math.pow(fract(a1),0.8));
+  var count =8 ; // The more coefficients you use, the better the approximation
+  var real = new Float32Array(count);
+  var imag = new Float32Array(count);
+   var f2 = Math.pow(Math.sin(f1),px*0.6);
+   var f3 = Math.pow(Math.sin(f1),4.*py);
+  //real[0] = 0.5;
+  for (var i = 1; i < count; i++) { // note i starts at 1
+  imag[i] =  Math.sin(i*f2+f3) ;
+}
+  var wave = context.createPeriodicWave(real, imag);
+  osc.setPeriodicWave(wave);
+
     //var f1 = (1.-Math.pow(fract(a1),0.5));
     //osc.frequency.value = ((pointers[0].texcoordY-pvx)*300.);
     //vec2 p1 = clamp(mix(m2+(m-0.5)*0.1,vec2(0.5),0.05),0.,1.);
     //osc.frequency.value = Math.min(Math.abs((py-lerp(pvy,py,0.7))*10000.),300.);
     //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
     //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
-    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*3000.,10.+py*10.);
-    osc.frequency.value =fa*f1
+    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,3.);
+    osc.frequency.value =fa*20.*f1;
     //osc.frequency.value = (100.)*f1;
-    vol.gain.value =1.5;
+    vol.gain.value =fa*f1;
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
 //brownNoise.connect(vol).connect(context.destination);
