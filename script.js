@@ -753,12 +753,12 @@ function sons() {
   var count =8 ; // The more coefficients you use, the better the approximation
   var real = new Float32Array(count);
   var imag = new Float32Array(count);
-  var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,3.);
+
    var f2 = Math.pow(Math.sin(f1),px*0.6);
    var f3 = Math.pow(Math.sin(f1),4.*py);
   //real[0] = 0.5;
   for (var i = 1; i < count; i++) { // note i starts at 1
-  imag[i] =  Math.sin(i*f2+f3) ;
+  imag[i] =  Math.sin(i*f1+f1) ;
 }
   var wave = context.createPeriodicWave(real, imag);
   osc.setPeriodicWave(wave);
@@ -769,8 +769,8 @@ function sons() {
     //osc.frequency.value = Math.min(Math.abs((py-lerp(pvy,py,0.7))*10000.),300.);
     //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
     //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
-
-    osc.frequency.value =fa*15.*f1;
+    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,7.);
+    osc.frequency.value =fa*5.*f1;
     //osc.frequency.value = (100.)*f1;
     vol.gain.value =fa*f1;
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
