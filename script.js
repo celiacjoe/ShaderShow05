@@ -772,7 +772,7 @@ function sons() {
     var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,1.);
   //  osc.frequency.value =fa*5.*f1;
     //osc.frequency.value = (100.)*f1;
-    vol.gain.value =fa*f1*5.;
+    vol.gain.value =fa*f1*7.;
 
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
