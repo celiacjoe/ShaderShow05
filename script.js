@@ -749,10 +749,11 @@ function sons() {
         v0 =2.;
       }
       var a1 = fract(time*3.*v0);
-      var f1 = (1.-Math.pow(fract(a1),0.8));
+      var f1 = (1.-fract(a1));
   var count =8 ; // The more coefficients you use, the better the approximation
   var real = new Float32Array(count);
   var imag = new Float32Array(count);
+  var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,3.);
    var f2 = Math.pow(Math.sin(f1),px*0.6);
    var f3 = Math.pow(Math.sin(f1),4.*py);
   //real[0] = 0.5;
@@ -768,12 +769,13 @@ function sons() {
     //osc.frequency.value = Math.min(Math.abs((py-lerp(pvy,py,0.7))*10000.),300.);
     //  console.log( Math.min(((py-lerp(pvy,py,0.5))*6000.),100.));
     //var fa = lerp(Math.pow(Math.hypot(px-pvx,py-py),0.1),0.,dt);
-    var fa = Math.min(Math.hypot(px-pvx,py-pvy)*100.,3.);
-    osc.frequency.value =fa*20.*f1;
+
+    osc.frequency.value =fa*15.*f1;
     //osc.frequency.value = (100.)*f1;
     vol.gain.value =fa*f1;
     //vol.gain.exponentialRampToValueAtTime(0.9,time+1.);
 }
 //brownNoise.connect(vol).connect(context.destination);
+
 osc.connect(vol).connect(context.destination);
     osc.start();
