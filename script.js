@@ -718,7 +718,7 @@ osc
 var vol = context.createGain();
 //var dt = calcDeltaTime();
 var biquadFilter = context.createBiquadFilter();
-var bufferSize = 4096;
+var bufferSize = 1024;
 var brownNoise = (function() {
     var lastOut = 0.0;
     var node =context.createScriptProcessor(bufferSize, 1, 1);
